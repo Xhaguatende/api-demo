@@ -24,7 +24,7 @@ public class UpsertProductCommandHandler : IRequestHandler<UpsertProductCommand,
     {
         Product product;
 
-        if (request.Id.HasValue)
+        if (request.Id.HasValue && request.Id.Value != Guid.Empty)
         {
             var existingProduct = await _productRepository.GetOneByExpressionAsync(
                 x => x.Id == request.Id,

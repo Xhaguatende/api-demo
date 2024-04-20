@@ -40,7 +40,9 @@ public abstract class MongoDbRepository<T, TKey, TAggregate> : IRepository<T, TK
     {
         var filter = Builders<T>.Filter.Eq(t => t.Id, id);
 
-        return await Collection.Find(filter).FirstOrDefaultAsync(cancellationToken);
+        var t = await Collection.Find(filter).FirstOrDefaultAsync(cancellationToken);
+
+        return t;
     }
 
     public async Task<List<TAggregate>> GetManyAggregatesByExpressionAsync(
@@ -58,7 +60,9 @@ public abstract class MongoDbRepository<T, TKey, TAggregate> : IRepository<T, TK
     {
         var filterDefinition = BuildFilterDefinition(filter);
 
-        return await Collection.Find(filterDefinition).ToListAsync(cancellationToken);
+        var t = await Collection.Find(filterDefinition).ToListAsync(cancellationToken);
+
+        return t;
     }
 
     public async Task<TAggregate?> GetOneAggregateByExpressionAsync(

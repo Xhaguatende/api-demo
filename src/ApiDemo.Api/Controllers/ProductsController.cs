@@ -11,7 +11,7 @@ using Application.Commands.UpsertProduct;
 using Application.Queries.GetProductById;
 using Application.Queries.GetProductsAggregate;
 using AutoMapper;
-using Dtos;
+using Dtos.Product;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 

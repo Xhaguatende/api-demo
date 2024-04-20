@@ -10,7 +10,7 @@ using Application.Commands.UpsertProduct;
 using AutoMapper;
 using Domain.Products.Aggregate;
 using Domain.Products.Entity;
-using Dtos;
+using Dtos.Product;
 
 public class ProductMapping : Profile
 {

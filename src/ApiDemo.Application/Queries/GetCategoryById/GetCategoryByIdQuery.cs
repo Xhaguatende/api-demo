@@ -1,14 +1,12 @@
 ﻿// -------------------------------------------------------------------------------------
-//  <copyright file="GetProductDto.cs" company="{Company Name}">
+//  <copyright file="GetCategoryByIdQuery.cs" company="{Company Name}">
 //    Copyright (c) {Company Name}. All rights reserved.
 //  </copyright>
 // -------------------------------------------------------------------------------------
 
-namespace ApiDemo.Api.Dtos;
+namespace ApiDemo.Application.Queries.GetCategoryById;
 
-using Base;
+using Domain.Categories.Entity;
+using MediatR;
 
-public record GetProductDto : ProductBaseDto
-{
-    public ProductCategoryDto Category { get; set; } = default!;
-}
+public record GetCategoryByIdQuery(Guid Id) : IRequest<Category>;

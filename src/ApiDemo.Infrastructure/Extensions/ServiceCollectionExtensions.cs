@@ -39,6 +39,7 @@ public static class ServiceCollectionExtensions
         });
 
         services.AddScoped<IProductRepository, ProductRepository>();
+        services.AddScoped<ICategoryRepository, CategoryRepository>();
 
         MongoExtensions.SetupMongoConventions();
     }

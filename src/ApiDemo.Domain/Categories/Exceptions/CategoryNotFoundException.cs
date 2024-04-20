@@ -1,17 +1,17 @@
 ﻿// -------------------------------------------------------------------------------------
-//  <copyright file="ProductNotFoundException.cs" company="{Company Name}">
+//  <copyright file="CategoryNotFoundException.cs" company="{Company Name}">
 //    Copyright (c) {Company Name}. All rights reserved.
 //  </copyright>
 // -------------------------------------------------------------------------------------
 
-namespace ApiDemo.Domain.Products.Exceptions;
+namespace ApiDemo.Domain.Categories.Exceptions;
 
 using ApiDemo.Domain.Exceptions;
 
-public class ProductNotFoundException : NotFoundException
+public class CategoryNotFoundException : NotFoundException
 {
-    public ProductNotFoundException(Guid id)
-        : base($"Product with id {id} was not found.")
+    public CategoryNotFoundException(Guid id)
+        : base($"Category with id {id} was not found.")
     {
     }
 }

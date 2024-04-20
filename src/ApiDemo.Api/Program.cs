@@ -31,6 +31,7 @@ services.AddControllers(
 services.AddRouting(options => { options.LowercaseUrls = true; });
 
 services.AddExceptionHandler<ValidationExceptionHandler>();
+services.AddExceptionHandler<NotFoundExceptionHandler>();
 services.AddExceptionHandler<GlobalExceptionHandler>();
 services.AddProblemDetails();
 

@@ -4,7 +4,7 @@
 //  </copyright>
 // -------------------------------------------------------------------------------------
 
-namespace ApiDemo.Api.Dtos;
+namespace ApiDemo.Api.Dtos.Product;
 
 using Base;
 
