@@ -38,9 +38,6 @@ jobs:
     - name: Restore dependencies
       run: dotnet restore
 
-    - name: Install SonarCloud
-      run: dotnet tool install --global dotnet-sonarscanner
-
     - name: Build
       run: dotnet build --no-restore --configuration ${{ env.BUILD_CONFIGURATION }} -p:GeneratePackageOnBuild=false
 
@@ -54,7 +51,7 @@ jobs:
                     -m:1
 
     - name: SonarCloud Analysis
-      uses: SonarSource/sonarcloud-github-action@v1.8
+      uses: SonarSource/sonarcloud-github-action@v2.1.1
       with:
         args: >
             -Dsonar.organization=${{ secrets.SONAR_CLOUD_ORGANIZATION }}
