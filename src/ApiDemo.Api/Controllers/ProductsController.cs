@@ -13,10 +13,12 @@ using Application.Queries.GetProductsAggregate;
 using AutoMapper;
 using Dtos.Product;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 [Route("api/[controller]")]
 [ApiController]
+[Authorize]
 public class ProductsController : ControllerBase
 {
     private readonly IMapper _mapper;

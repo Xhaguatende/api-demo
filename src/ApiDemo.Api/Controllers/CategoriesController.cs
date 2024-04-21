@@ -11,10 +11,12 @@ using Application.Queries.GetCategoryById;
 using AutoMapper;
 using Dtos.Category;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 [Route("api/[controller]")]
 [ApiController]
+[Authorize]
 public class CategoriesController : ControllerBase
 {
     private readonly IMapper _mapper;

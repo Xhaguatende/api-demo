@@ -4,10 +4,10 @@
 //  </copyright>
 // -------------------------------------------------------------------------------------
 
+namespace ApiDemo.Application.Extensions;
+
 using FluentValidation;
 using Microsoft.Extensions.DependencyInjection;
-
-namespace ApiDemo.Application.Extensions;
 
 public static class ServiceCollectionExtensions
 {
@@ -25,9 +25,6 @@ public static class ServiceCollectionExtensions
         var applicationAssembly = typeof(IAssemblyReference).Assembly;
 
         services.AddMediatR(
-            cfg =>
-            {
-                cfg.RegisterServicesFromAssembly(applicationAssembly);
-            });
+            cfg => { cfg.RegisterServicesFromAssembly(applicationAssembly); });
     }
 }
