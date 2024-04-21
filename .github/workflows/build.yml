@@ -7,11 +7,11 @@ on:
       - '**/README.md'
 
 env:
-  DOTNET_VERSION: '6.0.x' 
+  DOTNET_VERSION: '8.0.x' 
   BUILD_CONFIGURATION: 'Release'    
-  PUBLISH_PROJECT: 'TheAA.Configuration.Api/TheAA.Configuration.Api.csproj'
   AZURE_ACR_REPOSITORY: 'configuration-api'
-  SONAR_CLOUD_PROJECT_KEY: 'aaireland_dotnet-configuration-service'
+  PUBLISH_PROJECT: 'ApiDemo.Api/ApiDemo.Api.csproj'
+  SONAR_CLOUD_PROJECT_KEY: 'Xhaguatende_api-demo'
 
 defaults:
   run:

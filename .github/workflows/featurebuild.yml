@@ -9,7 +9,6 @@ on:
 env:
   DOTNET_VERSION: '8.0.x' 
   BUILD_CONFIGURATION: 'Release'    
-  PUBLISH_PROJECT: 'ApiDemo.Api/ApiDemo.Api.csproj'
   SONAR_CLOUD_PROJECT_KEY: 'Xhaguatende_api-demo'
 
 defaults:
