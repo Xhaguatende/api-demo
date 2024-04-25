@@ -87,8 +87,8 @@ jobs:
       if: steps.gitversion.outputs.CommitsSinceVersionSource > 0
       uses: docker/build-push-action@v5
       with:
-        context: docker/
-        file: ./Dockerfile.Api
+        context: .
+        file: docker/Dockerfile.Api
         push: true
         tags: ${{secrets.DOCKERHUB_USERNAME}}/${{env.DOCKER_HUB_REPOSITORY}}:${{ steps.gitversion.outputs.nuGetVersionV2 }}
         labels: |
