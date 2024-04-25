@@ -6,7 +6,7 @@
 
 namespace ApiDemo.Application.Queries.GetCategories;
 
-using Domain.Categories.Entity;
 using MediatR;
+using Responses.Category;
 
-public record GetCategoriesQuery : IRequest<List<Category>>;
+public record GetCategoriesQuery : IRequest<List<CategoryResponse>>;

@@ -1,14 +1,9 @@
 ﻿// -------------------------------------------------------------------------------------
-//  <copyright file="GetProductDto.cs" company="{Company Name}">
+//  <copyright file="DeleteProductResponse.cs" company="{Company Name}">
 //    Copyright (c) {Company Name}. All rights reserved.
 //  </copyright>
 // -------------------------------------------------------------------------------------
 
-namespace ApiDemo.Api.Dtos.Product;
+namespace ApiDemo.Application.Commands.DeleteProduct;
 
-using Base;
-
-public record GetProductDto : ProductBaseDto
-{
-    public ProductCategoryDto Category { get; set; } = default!;
-}
+public record DeleteProductResponse(bool Success, Guid Id);

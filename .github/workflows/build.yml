@@ -9,9 +9,9 @@ on:
 env:
   DOTNET_VERSION: '8.0.x' 
   BUILD_CONFIGURATION: 'Release'    
-  AZURE_ACR_REPOSITORY: 'configuration-api'
-  PUBLISH_PROJECT: 'ApiDemo.Api/ApiDemo.Api.csproj'
   SONAR_CLOUD_PROJECT_KEY: 'Xhaguatende_api-demo'
+  PUBLISH_PROJECT: 'ApiDemo.Api/ApiDemo.Api.csproj'
+  AZURE_ACR_REPOSITORY: 'configuration-api'
 
 defaults:
   run:
@@ -51,28 +51,7 @@ jobs:
             
     - name: Restore dependencies
       run: dotnet restore
-
-    - name: Install SonarCloud
-      run: dotnet tool install --global dotnet-sonarscanner
-
-    - name: Begin SonarCloud Scan
-      run: |
-            dotnet sonarscanner begin /o:"${{ secrets.SONAR_CLOUD_ORGANIZATION }}" \
-                                    /k:"${{ env.SONAR_CLOUD_PROJECT_KEY }}" \
-                                    /v:"${{ steps.gitversion.outputs.nuGetVersionV2 }}" \
-                                    /d:sonar.host.url="${{ secrets.SONAR_CLOUD_URL }}" \
-                                    /d:sonar.login="${{ secrets.SONAR_TOKEN }}" \
-                                    /d:sonar.cs.opencover.reportsPaths=./CoverageResults/coverage.opencover.xml \
-                                    /d:sonar.coverage.exclusions="**Test*.cs" \
-                                    /d:sonar.qualitygate.wait=true
-
-    - name: Install & Run Azurite
-      run: npm install -g azurite
-
-    - name: Run Azurite in Background
-      shell: bash
-      run: azurite-blob &
-    
+   
     - name: Build
       run: dotnet build --no-restore --configuration ${{ env.BUILD_CONFIGURATION }} -p:GeneratePackageOnBuild=false
 
@@ -85,17 +64,16 @@ jobs:
                     /p:CoverletOutputFormat=\"opencover,json\" \
                     -m:1
 
-    - name: End SonarCloud Scan
-      run: dotnet sonarscanner end /d:sonar.login="${{ secrets.SONAR_TOKEN }}"
+    - name: SonarCloud Analysis
+      uses: SonarSource/sonarcloud-github-action@v2.1.1
+      with:
+        args: >
+            -Dsonar.organization=${{ secrets.SONAR_CLOUD_ORGANIZATION }}
+            -Dsonar.projectKey=${{ env.SONAR_CLOUD_PROJECT_KEY }}
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-    - name: Create package(s)
-      run: dotnet pack -c ${{ env.BUILD_CONFIGURATION }} -p:PackageVersion=${{ steps.gitversion.outputs.nuGetVersionV2 }}
-            
-    - name: Publish package(s)
-      run: dotnet nuget push --source ${{ secrets.PACKAGES_FEED_URL }} --api-key ${{ secrets.GITHUB_TOKEN }} **/bin/Release/*.*nupkg
-        
+        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+      
     - name: Publish API
       run: dotnet publish ${{ env.PUBLISH_PROJECT }} --no-build --configuration ${{ env.BUILD_CONFIGURATION }} --output './../publish'
    

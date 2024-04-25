@@ -8,10 +8,12 @@ namespace ApiDemo.Application.Commands.UpsertProduct;
 
 using Domain.Products.Entity;
 using Domain.Products.Exceptions;
+using Domain.Shared;
 using MediatR;
 using Repositories;
+using Responses.Product;
 
-public class UpsertProductCommandHandler : IRequestHandler<UpsertProductCommand, Product>
+public class UpsertProductCommandHandler : IRequestHandler<UpsertProductCommand, Result<ProductResponse>>
 {
     private readonly IProductRepository _productRepository;
 
@@ -20,7 +22,7 @@ public class UpsertProductCommandHandler : IRequestHandler<UpsertProductCommand,
         _productRepository = productRepository;
     }
 
-    public async Task<Product> Handle(UpsertProductCommand request, CancellationToken cancellationToken)
+    public async Task<Result<ProductResponse>> Handle(UpsertProductCommand request, CancellationToken cancellationToken)
     {
         Product product;
 
@@ -52,6 +54,18 @@ public class UpsertProductCommandHandler : IRequestHandler<UpsertProductCommand,
 
         var result = await _productRepository.UpsertOneAsync(product, cancellationToken);
 
-        return result;
+        return new ProductResponse
+        {
+            Id = result.Id,
+            Name = result.Name,
+            Description = result.Description,
+            Price = result.Price,
+            Stock = result.Stock,
+            Category = new ProductCategoryResponse
+            {
+                Id = request.CategoryId,
+                Name = string.Empty
+            }
+        };
     }
 }

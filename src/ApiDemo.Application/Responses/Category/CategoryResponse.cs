@@ -1,13 +1,14 @@
 ﻿// -------------------------------------------------------------------------------------
-//  <copyright file="GetCategoryDto.cs" company="{Company Name}">
+//  <copyright file="CategoryResponseBase.cs" company="{Company Name}">
 //    Copyright (c) {Company Name}. All rights reserved.
 //  </copyright>
 // -------------------------------------------------------------------------------------
 
-namespace ApiDemo.Api.Dtos.Category;
+namespace ApiDemo.Application.Responses.Category;
 
-public record GetCategoryDto
+public class CategoryResponse
 {
+    public string Description { get; set; } = default!;
     public Guid Id { get; set; }
     public string Name { get; set; } = default!;
 }

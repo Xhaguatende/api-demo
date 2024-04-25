@@ -6,9 +6,10 @@
 
 namespace ApiDemo.Application.Commands.RegisterAccount;
 
+using Domain.Shared;
 using MediatR;
 
-public record RegisterAccountCommand : IRequest<bool>
+public record RegisterAccountCommand : IRequest<Result<RegisterAccountResponse>>
 {
     public string ConfirmPassword { get; set; } = default!;
     public string Email { get; set; } = default!;

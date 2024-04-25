@@ -6,7 +6,7 @@
 
 namespace ApiDemo.Application.Queries.GetProductById;
 
-using Domain.Products.Aggregate;
 using MediatR;
+using Responses.Product;
 
-public record GetProductByIdQuery(Guid Id) : IRequest<ProductAggregate>;
+public record GetProductByIdQuery(Guid Id) : IRequest<ProductResponse>;

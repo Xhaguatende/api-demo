@@ -6,7 +6,7 @@
 
 namespace ApiDemo.Application.Queries.GetProducts;
 
-using Domain.Products.Entity;
 using MediatR;
+using Responses.Product;
 
-public record GetProductsQuery : IRequest<List<Product>>;
+public record GetProductsQuery : IRequest<List<ProductResponse>>;

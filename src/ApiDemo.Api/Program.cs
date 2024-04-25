@@ -51,8 +51,6 @@ services.AddOptions<AuthSettings>()
     .ValidateFluently()
     .ValidateOnStart();
 
-services.AddAutoMapper(x => x.AddMaps(AppDomain.CurrentDomain.GetAssemblies()));
-
 services.AddAuthentication(options =>
     {
         options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;

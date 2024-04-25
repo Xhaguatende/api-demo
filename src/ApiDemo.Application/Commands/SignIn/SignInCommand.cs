@@ -6,6 +6,7 @@
 
 namespace ApiDemo.Application.Commands.SignIn;
 
+using Domain.Shared;
 using MediatR;
 
-public record SignInCommand(string Email, string Password) : IRequest<SignInCommandResponse>;
+public record SignInCommand(string Email, string Password) : IRequest<Result<SignInCommandResponse>>;

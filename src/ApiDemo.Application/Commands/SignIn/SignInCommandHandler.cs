@@ -6,11 +6,13 @@
 
 namespace ApiDemo.Application.Commands.SignIn;
 
+using Domain.Accounts.Errors;
+using Domain.Shared;
 using MediatR;
 using Repositories;
 using Services;
 
-public class SignInCommandHandler : IRequestHandler<SignInCommand, SignInCommandResponse>
+public class SignInCommandHandler : IRequestHandler<SignInCommand, Result<SignInCommandResponse>>
 {
     private readonly IAccountRepository _accountRepository;
     private readonly ITokenService _tokenService;
@@ -21,24 +23,19 @@ public class SignInCommandHandler : IRequestHandler<SignInCommand, SignInCommand
         _tokenService = tokenService;
     }
 
-    public async Task<SignInCommandResponse> Handle(SignInCommand request, CancellationToken cancellationToken)
+    public async Task<Result<SignInCommandResponse>> Handle(SignInCommand request, CancellationToken cancellationToken)
     {
         var account = await _accountRepository.GetByEmailAsync(request.Email, cancellationToken);
 
         if (account is null)
         {
-            return new SignInCommandResponse
-            {
-                Message = "Invalid email or password."
-            };
+            // TODO: Log this event. So we know that someone tried to sign in with an email that doesn't exist
+            return Result<SignInCommandResponse>.Failure([AccountErrors.InvalidCredentials()]);
         }
 
         if (!account.VerifyPassword(request.Password))
         {
-            return new SignInCommandResponse
-            {
-                Message = "Invalid email or password."
-            };
+            return Result<SignInCommandResponse>.Failure([AccountErrors.InvalidCredentials()]);
         }
 
         var accessTokenTuple = _tokenService.GenerateAccessToken(account);
@@ -51,7 +48,6 @@ public class SignInCommandHandler : IRequestHandler<SignInCommand, SignInCommand
 
         return new SignInCommandResponse
         {
-            Success = true,
             AccessToken = accessTokenTuple.Item1,
             ExpiresIn = accessTokenTuple.Item2,
             RefreshToken = refreshTokenTuple.Item1

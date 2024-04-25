@@ -6,12 +6,12 @@
 
 namespace ApiDemo.Application.Queries.GetProductById;
 
-using Domain.Products.Aggregate;
 using Domain.Products.Exceptions;
 using MediatR;
 using Repositories;
+using Responses.Product;
 
-public class GetProductByIdQueryHandler : IRequestHandler<GetProductByIdQuery, ProductAggregate>
+public class GetProductByIdQueryHandler : IRequestHandler<GetProductByIdQuery, ProductResponse>
 {
     private readonly IProductRepository _productRepository;
 
@@ -20,10 +20,27 @@ public class GetProductByIdQueryHandler : IRequestHandler<GetProductByIdQuery, P
         _productRepository = productRepository;
     }
 
-    public async Task<ProductAggregate> Handle(GetProductByIdQuery request, CancellationToken cancellationToken)
+    public async Task<ProductResponse> Handle(GetProductByIdQuery request, CancellationToken cancellationToken)
     {
         var product = await _productRepository.GetOneAggregateByExpressionAsync(x => x.Id == request.Id, cancellationToken);
 
-        return product ?? throw new ProductNotFoundException(request.Id);
+        if (product is null)
+        {
+            throw new ProductNotFoundException(request.Id);
+        }
+
+        return new ProductResponse
+        {
+            Id = product.Id,
+            Name = product.Name,
+            Description = product.Description,
+            Price = product.Price,
+            Stock = product.Stock,
+            Category = new ProductCategoryResponse
+            {
+                Id = product.Category.Id,
+                Name = product.Category.Name
+            }
+        };
     }
 }

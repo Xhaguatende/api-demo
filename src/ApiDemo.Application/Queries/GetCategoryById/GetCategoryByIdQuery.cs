@@ -6,7 +6,7 @@
 
 namespace ApiDemo.Application.Queries.GetCategoryById;
 
-using Domain.Categories.Entity;
 using MediatR;
+using Responses.Category;
 
-public record GetCategoryByIdQuery(Guid Id) : IRequest<Category>;
+public record GetCategoryByIdQuery(Guid Id) : IRequest<CategoryResponse>;
