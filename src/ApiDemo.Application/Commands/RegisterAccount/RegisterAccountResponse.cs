@@ -1,15 +1,9 @@
 ﻿// -------------------------------------------------------------------------------------
-//  <copyright file="UpsertProductDto.cs" company="{Company Name}">
+//  <copyright file="RegisterAccountResponse.cs" company="{Company Name}">
 //    Copyright (c) {Company Name}. All rights reserved.
 //  </copyright>
 // -------------------------------------------------------------------------------------
 
-namespace ApiDemo.Api.Dtos.Product;
+namespace ApiDemo.Application.Commands.RegisterAccount;
 
-using Base;
-
-public record UpsertProductDto : ProductBaseDto
-{
-    public Guid CategoryId { get; set; }
-    public new Guid? Id { get; set; }
-}
+public record RegisterAccountResponse(bool Success, string Email);

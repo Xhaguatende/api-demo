@@ -7,11 +7,12 @@
 namespace ApiDemo.Application.Commands.RegisterAccount;
 
 using Domain.Accounts.Entity;
-using Domain.Accounts.Exceptions;
+using Domain.Accounts.Errors;
+using Domain.Shared;
 using MediatR;
 using Repositories;
 
-public class RegisterAccountCommandHandler : IRequestHandler<RegisterAccountCommand, bool>
+public class RegisterAccountCommandHandler : IRequestHandler<RegisterAccountCommand, Result<RegisterAccountResponse>>
 {
     private readonly IAccountRepository _accountRepository;
 
@@ -20,19 +21,21 @@ public class RegisterAccountCommandHandler : IRequestHandler<RegisterAccountComm
         _accountRepository = accountRepository;
     }
 
-    public async Task<bool> Handle(RegisterAccountCommand request, CancellationToken cancellationToken)
+    public async Task<Result<RegisterAccountResponse>> Handle(RegisterAccountCommand request, CancellationToken cancellationToken)
     {
         var existingAccount = await _accountRepository.GetByEmailAsync(request.Email, cancellationToken);
 
         if (existingAccount is not null)
         {
-            throw new AccountAlreadyExistException(request.Email);
+            return Result<RegisterAccountResponse>.Failure([AccountErrors.AccountAlreadyExists(request.Email)]);
         }
 
         var account = new Account(
             request.Email,
             request.Password);
 
-        return await _accountRepository.RegisterAccountAsync(account, cancellationToken);
+        var result = await _accountRepository.RegisterAccountAsync(account, cancellationToken);
+
+        return new RegisterAccountResponse(result, request.Email);
     }
 }

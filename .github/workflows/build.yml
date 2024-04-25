@@ -1,0 +1,107 @@
+name: Build and Deploy Image Container
+
+on:
+  push:
+    branches: [ 'main' ]
+    paths-ignore:
+      - '**/README.md'
+
+env:
+  DOTNET_VERSION: '8.0.x' 
+  BUILD_CONFIGURATION: 'Release'    
+  SONAR_CLOUD_PROJECT_KEY: 'Xhaguatende_api-demo'
+  PUBLISH_PROJECT: 'ApiDemo.Api/ApiDemo.Api.csproj'
+  DOCKER_HUB_REPOSITORY: 'api-demo'
+
+defaults:
+  run:
+    working-directory: ./src
+
+# Ensures only one execution per branch will run at a time.
+concurrency:
+  group: ${{ github.ref }}
+  
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+      with:
+        fetch-depth: 0
+
+    - name: Install GitVersion
+      uses: gittools/actions/gitversion/setup@v0.9.7
+      with:
+        versionSpec: '5.x'
+
+    - name: Setup GitVersion
+      uses: gittools/actions/gitversion/execute@v0.9.7
+      id: gitversion
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: ${{ env.DOTNET_VERSION }}
+        source-url: ${{ secrets.PACKAGES_FEED_URL }}
+      env:
+        NUGET_AUTH_TOKEN: ${{ secrets.NUGET_AUTH_TOKEN }}
+            
+    - name: Restore dependencies
+      run: dotnet restore
+   
+    - name: Build
+      run: dotnet build --no-restore --configuration ${{ env.BUILD_CONFIGURATION }} -p:GeneratePackageOnBuild=false
+
+    - name: Test
+      run: |
+            dotnet test --no-restore --no-build --verbosity normal --configuration ${{ env.BUILD_CONFIGURATION }} \
+                    /p:CollectCoverage=true \
+                    /p:CoverletOutput=../CoverageResults/ \
+                    /p:MergeWith="../CoverageResults/coverage.json" \
+                    /p:CoverletOutputFormat=\"opencover,json\" \
+                    -m:1
+
+    - name: SonarCloud Analysis
+      uses: SonarSource/sonarcloud-github-action@v2.1.1
+      with:
+        args: >
+            -Dsonar.organization=${{ secrets.SONAR_CLOUD_ORGANIZATION }}
+            -Dsonar.projectKey=${{ env.SONAR_CLOUD_PROJECT_KEY }}
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+      
+    - name: Publish API
+      run: dotnet publish ${{ env.PUBLISH_PROJECT }} --no-build --configuration ${{ env.BUILD_CONFIGURATION }} --output './../publish'
+   
+    - name: Login to Docker Hub Registry
+      uses: docker/login-action@v3
+      with:
+          username: ${{secrets.DOCKERHUB_USERNAME}}
+          password: ${{secrets.DOCKERHUB_TOKEN}}      
+
+    - name: Build and Push Image to Docker Hub Registry
+      if: steps.gitversion.outputs.CommitsSinceVersionSource > 0
+      uses: docker/build-push-action@v5
+      with:
+        context: docker/
+        file: ./Dockerfile.Api
+        push: true
+        tags: ${{secrets.DOCKERHUB_USERNAME}}/${{env.DOCKER_HUB_REPOSITORY}}:${{ steps.gitversion.outputs.nuGetVersionV2 }}
+        labels: |
+            org.opencontainers.image.title=ApiDemo.Api
+            org.opencontainers.image.description=ApiDemo.Api
+            org.opencontainers.image.version=${{ steps.gitversion.outputs.nuGetVersionV2 }}
+
+    - name: Create Release
+      id: create_release
+      uses: actions/create-release@v1
+      if: steps.gitversion.outputs.CommitsSinceVersionSource > 0
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: v${{ steps.gitversion.outputs.nuGetVersionV2}}
+        release_name: Release ${{ steps.gitversion.outputs.nuGetVersionV2}}

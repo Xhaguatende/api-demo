@@ -6,11 +6,11 @@
 
 namespace ApiDemo.Application.Queries.GetProducts;
 
-using Domain.Products.Entity;
 using MediatR;
 using Repositories;
+using Responses.Product;
 
-internal class GetProductsQueryHandler : IRequestHandler<GetProductsQuery, List<Product>>
+internal class GetProductsQueryHandler : IRequestHandler<GetProductsQuery, List<ProductResponse>>
 {
     private readonly IProductRepository _productRepository;
 
@@ -19,8 +19,22 @@ internal class GetProductsQueryHandler : IRequestHandler<GetProductsQuery, List<
         _productRepository = productRepository;
     }
 
-    public async Task<List<Product>> Handle(GetProductsQuery request, CancellationToken cancellationToken)
+    public async Task<List<ProductResponse>> Handle(GetProductsQuery request, CancellationToken cancellationToken)
     {
-        return await _productRepository.GetManyByExpressionAsync(x => true, cancellationToken);
+        var products = await _productRepository.GetManyAggregatesByExpressionAsync(x => true, cancellationToken);
+
+        return products.Select(product => new ProductResponse
+        {
+            Id = product.Id,
+            Name = product.Name,
+            Description = product.Description,
+            Price = product.Price,
+            Stock = product.Stock,
+            Category = new ProductCategoryResponse
+            {
+                Id = product.Category.Id,
+                Name = product.Category.Name
+            }
+        }).ToList();
     }
 }

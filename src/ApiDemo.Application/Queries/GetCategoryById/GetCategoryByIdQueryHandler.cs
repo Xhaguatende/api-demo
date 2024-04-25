@@ -6,12 +6,12 @@
 
 namespace ApiDemo.Application.Queries.GetCategoryById;
 
-using Domain.Categories.Entity;
 using Domain.Categories.Exceptions;
 using MediatR;
 using Repositories;
+using Responses.Category;
 
-public class GetCategoryByIdQueryHandler : IRequestHandler<GetCategoryByIdQuery, Category>
+public class GetCategoryByIdQueryHandler : IRequestHandler<GetCategoryByIdQuery, CategoryResponse>
 {
     private readonly ICategoryRepository _categoryRepository;
 
@@ -20,10 +20,22 @@ public class GetCategoryByIdQueryHandler : IRequestHandler<GetCategoryByIdQuery,
         _categoryRepository = categoryRepository;
     }
 
-    public async Task<Category> Handle(GetCategoryByIdQuery request, CancellationToken cancellationToken)
+    public async Task<CategoryResponse> Handle(GetCategoryByIdQuery request, CancellationToken cancellationToken)
     {
         var category = await _categoryRepository.GetByIdAsync(request.Id, cancellationToken);
 
-        return category ?? throw new CategoryNotFoundException(request.Id);
+        if (category is null)
+        {
+            throw new CategoryNotFoundException(request.Id);
+        }
+
+        var response = new CategoryResponse
+        {
+            Id = category.Id,
+            Name = category.Name,
+            Description = category.Description
+        };
+
+        return response;
     }
 }

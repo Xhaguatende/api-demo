@@ -6,13 +6,15 @@
 
 namespace ApiDemo.Api.Controllers;
 
-using Dtos.Account;
+using Application.Commands.RegisterAccount;
+using Application.Commands.SignIn;
+using Base;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
 [Route("api/[controller]")]
 [ApiController]
-public class AccountsController : ControllerBase
+public class AccountsController : ApiDemoControllerBase
 {
     private readonly IMediator _mediator;
 
@@ -22,23 +24,28 @@ public class AccountsController : ControllerBase
     }
 
     [HttpPost("register")]
-    public async Task<IActionResult> RegisterAccount([FromBody] RegisterAccountRequest request)
+    public async Task<IActionResult> RegisterAccount([FromBody] RegisterAccountCommand command)
     {
-        await _mediator.Send(request.ToCommand());
+        var response = await _mediator.Send(command);
 
-        return Ok();
+        if (!response.IsSuccess)
+        {
+            return BadRequest(response.Errors);
+        }
+
+        return Ok(response.Value);
     }
 
     [HttpPost("sign-in")]
-    public async Task<IActionResult> SignInAsync([FromBody] SignInRequest request)
+    public async Task<IActionResult> SignInAsync([FromBody] SignInCommand request)
     {
-        var response = await _mediator.Send(request.ToCommand());
+        var response = await _mediator.Send(request);
 
-        if (!response.Success)
+        if (!response.IsSuccess)
         {
-            return BadRequest(response);
+            return BadRequest(response.Errors);
         }
 
-        return Ok(response);
+        return Ok(response.Value);
     }
 }

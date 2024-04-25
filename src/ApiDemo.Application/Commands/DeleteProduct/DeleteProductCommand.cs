@@ -6,6 +6,7 @@
 
 namespace ApiDemo.Application.Commands.DeleteProduct;
 
+using Domain.Shared;
 using MediatR;
 
-public record DeleteProductCommand(Guid Id) : IRequest<bool>;
+public record DeleteProductCommand(Guid Id) : IRequest<Result<DeleteProductResponse>>;

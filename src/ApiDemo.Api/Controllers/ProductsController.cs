@@ -9,9 +9,8 @@ namespace ApiDemo.Api.Controllers;
 using Application.Commands.DeleteProduct;
 using Application.Commands.UpsertProduct;
 using Application.Queries.GetProductById;
-using Application.Queries.GetProductsAggregate;
-using AutoMapper;
-using Dtos.Product;
+using Application.Queries.GetProducts;
+using Base;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -19,21 +18,24 @@ using Microsoft.AspNetCore.Mvc;
 [Route("api/[controller]")]
 [ApiController]
 [Authorize]
-public class ProductsController : ControllerBase
+public class ProductsController : ApiDemoControllerBase
 {
-    private readonly IMapper _mapper;
     private readonly IMediator _mediator;
 
-    public ProductsController(IMediator mediator, IMapper mapper)
+    public ProductsController(IMediator mediator)
     {
         _mediator = mediator;
-        _mapper = mapper;
     }
 
     [HttpDelete("{id:guid}")]
     public async Task<IActionResult> DeleteProductAsync(Guid id)
     {
-        await _mediator.Send(new DeleteProductCommand(id));
+        var response = await _mediator.Send(new DeleteProductCommand(id));
+
+        if (!response.IsSuccess)
+        {
+            return BadRequest(response.Errors);
+        }
 
         return NoContent();
     }
@@ -41,9 +43,7 @@ public class ProductsController : ControllerBase
     [HttpGet("{id:guid}")]
     public async Task<IActionResult> GetProductAsync(Guid id)
     {
-        var product = await _mediator.Send(new GetProductByIdQuery(id));
-
-        var response = _mapper.Map<GetProductDto>(product);
+        var response = await _mediator.Send(new GetProductByIdQuery(id));
 
         return Ok(response);
     }
@@ -51,20 +51,21 @@ public class ProductsController : ControllerBase
     [HttpGet]
     public async Task<IActionResult> GetProductsAsync()
     {
-        var products = await _mediator.Send(new GetProductsAggregateQuery());
-
-        var response = _mapper.Map<List<GetProductDto>>(products);
+        var response = await _mediator.Send(new GetProductsQuery());
 
         return Ok(response);
     }
 
     [HttpPost]
-    public async Task<IActionResult> UpsertProductAsync([FromBody] UpsertProductDto upsertProduct)
+    public async Task<IActionResult> UpsertProductAsync([FromBody] UpsertProductCommand command)
     {
-        var command = _mapper.Map<UpsertProductCommand>(upsertProduct);
+        var response = await _mediator.Send(command);
 
-        var response = _mapper.Map<UpsertProductDto>(await _mediator.Send(command));
+        if (!response.IsSuccess)
+        {
+            return BadRequest(response.Errors);
+        }
 
-        return Ok(response);
+        return Ok(response.Value);
     }
 }

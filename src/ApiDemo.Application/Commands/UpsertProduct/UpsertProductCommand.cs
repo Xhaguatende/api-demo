@@ -6,10 +6,11 @@
 
 namespace ApiDemo.Application.Commands.UpsertProduct;
 
-using Domain.Products.Entity;
+using Domain.Shared;
 using MediatR;
+using Responses.Product;
 
-public record UpsertProductCommand : IRequest<Product>
+public record UpsertProductCommand : IRequest<Result<ProductResponse>>
 {
     public Guid CategoryId { get; set; }
     public string Description { get; set; } = default!;

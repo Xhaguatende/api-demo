@@ -1,13 +1,14 @@
 ﻿// -------------------------------------------------------------------------------------
-//  <copyright file="ProductBaseDto.cs" company="{Company Name}">
+//  <copyright file="ProductResponse.cs" company="{Company Name}">
 //    Copyright (c) {Company Name}. All rights reserved.
 //  </copyright>
 // -------------------------------------------------------------------------------------
 
-namespace ApiDemo.Api.Dtos.Base;
+namespace ApiDemo.Application.Responses.Product;
 
-public abstract record ProductBaseDto
+public class ProductResponse
 {
+    public ProductCategoryResponse Category { get; set; } = new();
     public string Description { get; set; } = default!;
     public Guid Id { get; set; }
     public string Name { get; set; } = default!;
