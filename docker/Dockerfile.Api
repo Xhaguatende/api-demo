@@ -8,15 +8,15 @@ ARG USERNAME=appuser
 ARG USER_UID=1000
 ARG USER_GID=$USER_UID
 
-RUN groupadd -g $USER_GID $USERNAME && \
-	useradd -m -u $USER_UID -g $USER_GID $USERNAME
+RUN groupadd -g "$USER_GID" "$USERNAME" && \
+	useradd -m -u "$USER_UID" -g "$USER_GID" "$USERNAME"
 
 
-RUN chown -R $USERNAME:$USERNAME /app
+RUN chown -R "$USERNAME:$USERNAME" /app
 
 COPY ./publish/ .
 
-USER $USERNAME
+USER "$USERNAME"
 ENTRYPOINT ["dotnet", "ApiDemo.Api.dll"]
 
 ENV ASPNETCORE_HTTP_PORTS=80
