@@ -10,7 +10,7 @@ using System.Linq.Expressions;
 
 public interface IRepository<T, in TKey, TAggregate>
 {
-    Task<bool> DeleteOneAsync(TKey id, CancellationToken cancellationToken);
+    Task DeleteOneAsync(TKey id, CancellationToken cancellationToken);
 
     Task<T?> GetByIdAsync(TKey id, CancellationToken cancellationToken);
 
@@ -30,5 +30,5 @@ public interface IRepository<T, in TKey, TAggregate>
         Expression<Func<T, bool>> filter,
         CancellationToken cancellationToken);
 
-    Task<T> UpsertOneAsync(T document, CancellationToken cancellationToken);
+    Task UpsertOneAsync(T document, CancellationToken cancellationToken);
 }

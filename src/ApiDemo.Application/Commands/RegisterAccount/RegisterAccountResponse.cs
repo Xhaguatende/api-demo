@@ -6,4 +6,4 @@
 
 namespace ApiDemo.Application.Commands.RegisterAccount;
 
-public record RegisterAccountResponse(bool Success, string Email);
+public record RegisterAccountResponse(string Email);

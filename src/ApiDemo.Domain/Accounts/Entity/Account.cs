@@ -9,20 +9,19 @@ namespace ApiDemo.Domain.Accounts.Entity;
 using System.Security.Cryptography;
 using Microsoft.AspNetCore.Cryptography.KeyDerivation;
 using Primitives;
+using ValueObjects;
 
-public class Account : Entity<Guid>
+public class Account : Entity<AccountId>
 {
-    public Account(string email, string password)
-    : base(Guid.NewGuid())
+    public Account(AccountId id, string password)
+    : base(id)
     {
-        Email = email;
         var salt = GenerateSalt(16);
         PasswordSalt = Convert.ToBase64String(salt);
         PasswordHash = HashPassword(password, salt);
         RefreshToken = string.Empty;
     }
 
-    public string Email { get; private set; }
     public string PasswordHash { get; private set; }
     public string PasswordSalt { get; private set; }
     public string RefreshToken { get; private set; }

@@ -7,6 +7,7 @@
 namespace ApiDemo.Application.Commands.SignIn;
 
 using Domain.Accounts.Errors;
+using Domain.Accounts.ValueObjects;
 using Domain.Shared;
 using MediatR;
 using Repositories;
@@ -25,7 +26,7 @@ public class SignInCommandHandler : IRequestHandler<SignInCommand, Result<SignIn
 
     public async Task<Result<SignInCommandResponse>> Handle(SignInCommand request, CancellationToken cancellationToken)
     {
-        var account = await _accountRepository.GetByEmailAsync(request.Email, cancellationToken);
+        var account = await _accountRepository.GetByIdAsync(new AccountId(request.Email), cancellationToken);
 
         if (account is null)
         {
@@ -50,7 +51,8 @@ public class SignInCommandHandler : IRequestHandler<SignInCommand, Result<SignIn
         {
             AccessToken = accessTokenTuple.Item1,
             ExpiresIn = accessTokenTuple.Item2,
-            RefreshToken = refreshTokenTuple.Item1
+            RefreshToken = refreshTokenTuple.Item1,
+            RefreshTokenExpiresIn = refreshTokenTuple.Item2
         };
     }
 }

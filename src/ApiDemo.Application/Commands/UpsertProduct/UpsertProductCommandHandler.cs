@@ -7,7 +7,7 @@
 namespace ApiDemo.Application.Commands.UpsertProduct;
 
 using Domain.Products.Entity;
-using Domain.Products.Exceptions;
+using Domain.Products.Errors;
 using Domain.Shared;
 using MediatR;
 using Repositories;
@@ -30,41 +30,42 @@ public class UpsertProductCommandHandler : IRequestHandler<UpsertProductCommand,
         {
             var existingProduct = await _productRepository.GetOneByExpressionAsync(
                 x => x.Id == request.Id,
-                cancellationToken) ?? throw new ProductNotFoundException(request.Id.Value);
+                cancellationToken);
 
-            existingProduct.Name = request.Name;
-            existingProduct.Description = request.Description;
-            existingProduct.Price = request.Price;
-            existingProduct.CategoryId = request.CategoryId;
-            existingProduct.Stock = request.Stock;
+            if (existingProduct is null)
+            {
+                return Result<ProductResponse>.Failure([ProductErrors.ProductNotFound(request.Id.Value)]);
+            }
+
+            existingProduct.UpdateName(request.Name);
+            existingProduct.UpdateDescription(request.Description);
+            existingProduct.UpdatePrice(request.Price);
+            existingProduct.UpdateCategory(request.CategoryId);
+            existingProduct.UpdateStock(request.Stock);
 
             product = existingProduct;
         }
         else
         {
-            product = new Product(Guid.NewGuid())
-            {
-                Name = request.Name,
-                Description = request.Description,
-                CategoryId = request.CategoryId,
-                Price = request.Price,
-                Stock = request.Stock
-            };
+            product = new Product(request.Name, request.Description, request.CategoryId, request.Price, request.Stock);
         }
 
-        var result = await _productRepository.UpsertOneAsync(product, cancellationToken);
+        await _productRepository.UpsertOneAsync(product, cancellationToken);
+
+        var savedProduct =
+            await _productRepository.GetOneAggregateByExpressionAsync(x => x.Id == product.Id, cancellationToken);
 
         return new ProductResponse
         {
-            Id = result.Id,
-            Name = result.Name,
-            Description = result.Description,
-            Price = result.Price,
-            Stock = result.Stock,
+            Id = savedProduct!.Id,
+            Name = savedProduct.Name,
+            Description = savedProduct.Description,
+            Price = savedProduct.Price,
+            Stock = savedProduct.Stock,
             Category = new ProductCategoryResponse
             {
-                Id = request.CategoryId,
-                Name = string.Empty
+                Id = savedProduct.CategoryId,
+                Name = savedProduct.Category.Name
             }
         };
     }

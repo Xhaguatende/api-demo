@@ -1,9 +1,9 @@
 ﻿// -------------------------------------------------------------------------------------
-//  <copyright file="DeleteProductResponse.cs" company="{Company Name}">
+//  <copyright file="IAssemblyReference.cs" company="{Company Name}">
 //    Copyright (c) {Company Name}. All rights reserved.
 //  </copyright>
 // -------------------------------------------------------------------------------------
 
-namespace ApiDemo.Application.Commands.DeleteProduct;
+namespace ApiDemo.Api;
 
-public record DeleteProductResponse(Guid Id);
+public interface IAssemblyReference;

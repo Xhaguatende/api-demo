@@ -24,7 +24,7 @@ public class AccountsController : ApiDemoControllerBase
     }
 
     [HttpPost("register")]
-    public async Task<IActionResult> RegisterAccount([FromBody] RegisterAccountCommand command)
+    public async Task<IActionResult> RegisterAsync([FromBody] RegisterAccountCommand command)
     {
         var response = await _mediator.Send(command);
 

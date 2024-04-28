@@ -42,7 +42,8 @@ public class TokenService : ITokenService
             Claims = new Dictionary<string, object>
             {
                 { "sub", "user_id" },
-                { ClaimTypes.Email, account.Email }
+                { ClaimTypes.NameIdentifier, account.Id.Email },
+                { ClaimTypes.Email, account.Id.Email }
             }
         };
 
@@ -53,7 +54,7 @@ public class TokenService : ITokenService
 
     public Tuple<string, int> GenerateRefreshToken()
     {
-        var randomNumber = new byte[32]; // 256 bits
+        var randomNumber = new byte[32];
 
         using var rng = RandomNumberGenerator.Create();
         rng.GetBytes(randomNumber);
