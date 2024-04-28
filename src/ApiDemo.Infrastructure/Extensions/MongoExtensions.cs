@@ -9,6 +9,7 @@ namespace ApiDemo.Infrastructure.Extensions;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using Domain.Accounts.ValueObjects;
 using Domain.Primitives;
 using MongoDB.Bson.Serialization.Conventions;
 using MongoDB.Bson.Serialization.Serializers;
@@ -80,6 +81,16 @@ public static class MongoExtensions
         ConventionRegistry.Register("EnumStringConvention", enumConvention, _ => true);
 
         BsonClassMap.RegisterClassMap<Entity<Guid>>(
+            cm =>
+            {
+                cm.AutoMap();
+                cm.UnmapProperty("Id");
+                cm.MapMember(x => x.Id)
+                    .SetOrder(0)
+                    .SetElementName("id");
+            });
+
+        BsonClassMap.RegisterClassMap<Entity<AccountId>>(
             cm =>
             {
                 cm.AutoMap();

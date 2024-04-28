@@ -27,22 +27,18 @@ public abstract class MongoDbRepository<T, TKey, TAggregate> : IRepository<T, TK
     protected IMongoCollection<T> Collection { get; set; }
     protected abstract string CollectionName { get; }
 
-    public async Task<bool> DeleteOneAsync(TKey id, CancellationToken cancellationToken)
+    public async Task DeleteOneAsync(TKey id, CancellationToken cancellationToken)
     {
         var filter = Builders<T>.Filter.Eq(t => t.Id, id);
 
-        var result = await Collection.DeleteOneAsync(filter, cancellationToken);
-
-        return result.DeletedCount > 0;
+        await Collection.DeleteOneAsync(filter, cancellationToken);
     }
 
     public async Task<T?> GetByIdAsync(TKey id, CancellationToken cancellationToken)
     {
         var filter = Builders<T>.Filter.Eq(t => t.Id, id);
 
-        var t = await Collection.Find(filter).FirstOrDefaultAsync(cancellationToken);
-
-        return t;
+        return await Collection.Find(filter).SingleOrDefaultAsync(cancellationToken);
     }
 
     public async Task<List<TAggregate>> GetManyAggregatesByExpressionAsync(
@@ -60,9 +56,7 @@ public abstract class MongoDbRepository<T, TKey, TAggregate> : IRepository<T, TK
     {
         var filterDefinition = BuildFilterDefinition(filter);
 
-        var t = await Collection.Find(filterDefinition).ToListAsync(cancellationToken);
-
-        return t;
+        return await Collection.Find(filterDefinition).ToListAsync(cancellationToken);
     }
 
     public async Task<TAggregate?> GetOneAggregateByExpressionAsync(
@@ -83,7 +77,7 @@ public abstract class MongoDbRepository<T, TKey, TAggregate> : IRepository<T, TK
         return await Collection.Find(filterDefinition).FirstOrDefaultAsync(cancellationToken);
     }
 
-    public async Task<T> UpsertOneAsync(T document, CancellationToken cancellationToken)
+    public async Task UpsertOneAsync(T document, CancellationToken cancellationToken)
     {
         var filter = Builders<T>.Filter.Eq(t => t.Id, document.Id);
 
@@ -109,8 +103,6 @@ public abstract class MongoDbRepository<T, TKey, TAggregate> : IRepository<T, TK
         var updateOptions = new UpdateOptions { IsUpsert = true };
 
         await Collection.UpdateOneAsync(filter, update, updateOptions, cancellationToken);
-
-        return document;
     }
 
     protected virtual FilterDefinition<T> BuildFilterDefinition(Expression<Func<T, bool>>? filter)

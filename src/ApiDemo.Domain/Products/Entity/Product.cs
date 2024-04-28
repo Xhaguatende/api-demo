@@ -10,17 +10,58 @@ using Primitives;
 
 public class Product : Entity<Guid>
 {
-    public Product(Guid id) : base(id)
+    public Product(
+        string name,
+        string description,
+        Guid categoryId,
+        decimal price,
+        int stock) : base(Guid.NewGuid())
     {
+        Name = name;
+        Description = description;
+        CategoryId = categoryId;
+        Price = price;
+        Stock = stock;
     }
 
-    public Guid CategoryId { get; set; } = default!;
+    protected Product(Guid id) : base(id)
+    {
+        Description = string.Empty;
+        Name = string.Empty;
+    }
 
-    public string Description { get; set; } = default!;
+    public Guid CategoryId { get; private set; }
 
-    public string Name { get; set; } = default!;
+    public string Description { get; private set; }
 
-    public decimal Price { get; set; }
+    public string Name { get; private set; }
 
-    public int Stock { get; set; }
+    public decimal Price { get; private set; }
+
+    public int Stock { get; private set; }
+
+    public void UpdateCategory(Guid categoryId)
+    {
+        CategoryId = categoryId;
+    }
+
+    public void UpdateDescription(string description)
+    {
+        Description = description;
+    }
+
+    public void UpdateName(string name)
+    {
+        Name = name;
+    }
+
+    public void UpdatePrice(decimal price)
+    {
+        Price = price;
+    }
+
+    public void UpdateStock(int stock)
+    {
+        Stock = stock;
+    }
 }

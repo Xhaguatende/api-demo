@@ -29,8 +29,8 @@ public class DeleteProductCommandHandler : IRequestHandler<DeleteProductCommand,
             return Result<DeleteProductResponse>.Failure([ProductErrors.ProductNotFound(request.Id)]);
         }
 
-        var result = await _productRepository.DeleteOneAsync(request.Id, cancellationToken);
+        await _productRepository.DeleteOneAsync(request.Id, cancellationToken);
 
-        return new DeleteProductResponse(result, request.Id);
+        return new DeleteProductResponse(request.Id);
     }
 }

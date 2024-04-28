@@ -8,6 +8,7 @@ namespace ApiDemo.Application.Commands.RegisterAccount;
 
 using Domain.Accounts.Entity;
 using Domain.Accounts.Errors;
+using Domain.Accounts.ValueObjects;
 using Domain.Shared;
 using MediatR;
 using Repositories;
@@ -23,7 +24,7 @@ public class RegisterAccountCommandHandler : IRequestHandler<RegisterAccountComm
 
     public async Task<Result<RegisterAccountResponse>> Handle(RegisterAccountCommand request, CancellationToken cancellationToken)
     {
-        var existingAccount = await _accountRepository.GetByEmailAsync(request.Email, cancellationToken);
+        var existingAccount = await _accountRepository.GetByIdAsync(new AccountId(request.Email), cancellationToken);
 
         if (existingAccount is not null)
         {
@@ -31,11 +32,11 @@ public class RegisterAccountCommandHandler : IRequestHandler<RegisterAccountComm
         }
 
         var account = new Account(
-            request.Email,
+            new AccountId(request.Email),
             request.Password);
 
-        var result = await _accountRepository.RegisterAccountAsync(account, cancellationToken);
+        await _accountRepository.RegisterAccountAsync(account, cancellationToken);
 
-        return new RegisterAccountResponse(result, request.Email);
+        return new RegisterAccountResponse(request.Email);
     }
 }

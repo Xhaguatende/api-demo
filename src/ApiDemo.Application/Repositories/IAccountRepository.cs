@@ -7,10 +7,9 @@
 namespace ApiDemo.Application.Repositories;
 
 using Domain.Accounts.Entity;
+using Domain.Accounts.ValueObjects;
 
-public interface IAccountRepository : IRepository<Account, Guid, Account>
+public interface IAccountRepository : IRepository<Account, AccountId, Account>
 {
-    Task<Account?> GetByEmailAsync(string email, CancellationToken cancellationToken = default);
-
-    Task<bool> RegisterAccountAsync(Account account, CancellationToken cancellationToken = default);
+    Task RegisterAccountAsync(Account account, CancellationToken cancellationToken = default);
 }

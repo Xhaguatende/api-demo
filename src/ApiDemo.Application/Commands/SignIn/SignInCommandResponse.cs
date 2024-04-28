@@ -19,6 +19,9 @@ public class SignInCommandResponse
     [JsonPropertyName("refresh_token")]
     public string RefreshToken { get; set; } = default!;
 
+    [JsonPropertyName("refresh_token_expires_in")]
+    public int RefreshTokenExpiresIn { get; set; }
+
     [JsonPropertyName("token_type")]
     public string TokenType => "Bearer";
 }
