@@ -64,6 +64,9 @@ jobs:
         args: >
             -Dsonar.organization=${{ secrets.SONAR_CLOUD_ORGANIZATION }}
             -Dsonar.projectKey=${{ env.SONAR_CLOUD_PROJECT_KEY }}
+            -Dsonar.cs.opencover.reportsPaths=./CoverageResults/coverage.opencover.xml
+            -Dsonar.coverage.exclusions="**Test*.cs"
+            -Dsonar.qualitygate.wait=true
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
