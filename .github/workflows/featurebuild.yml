@@ -47,7 +47,7 @@ jobs:
       run: dotnet restore
 
     - name: Install SonarCloud
-      run: dotnet tool install --global dotnet-sonarscanner --version 5.15
+      run: dotnet tool install --global dotnet-sonarscanner
 
     - name: Begin SonarCloud Scan
       run: |
