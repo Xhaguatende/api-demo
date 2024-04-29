@@ -47,7 +47,7 @@ jobs:
       run: dotnet restore
 
     - name: Install SonarCloud
-      run: dotnet tool install --global dotnet-sonarscanner
+      run: dotnet tool install --global dotnet-sonarscanner --version 5.15.1
 
     - name: Begin SonarCloud Scan
       run: |
@@ -76,4 +76,3 @@ jobs:
       run: dotnet sonarscanner end /d:sonar.login="${{ secrets.SONAR_TOKEN }}"
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
