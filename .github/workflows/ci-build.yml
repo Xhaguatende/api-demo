@@ -1,8 +1,8 @@
-name: Feature build
+name: Build and Deploy Image Container
 
 on:
   push:
-    branches: [ 'feature/*' ]
+    branches: [ 'main' ]
     paths-ignore:
       - '**/README.md'
 
@@ -10,6 +10,8 @@ env:
   DOTNET_VERSION: '8.0.x' 
   BUILD_CONFIGURATION: 'Release'    
   SONAR_CLOUD_PROJECT_KEY: 'Xhaguatende_api-demo'
+  PUBLISH_PROJECT: 'ApiDemo.Api/ApiDemo.Api.csproj'
+  DOCKER_HUB_REPOSITORY: 'api-demo'
 
 defaults:
   run:
@@ -24,14 +26,6 @@ jobs:
 
     runs-on: ubuntu-latest
 
-    services:
-      mongodb:
-        image: mongo:7
-        ports:
-          - 27017:27017
-        options: "--health-cmd \"mongosh --eval 'db.runCommand({ping: 1})'\" --health-interval 10s --health-timeout 5s --health-retries 5"
-
-
     steps:
     - name: Checkout
       uses: actions/checkout@v2
@@ -41,13 +35,25 @@ jobs:
     - name: Set up JDK 17
       uses: actions/setup-java@v2
       with:
-        java-version: '17' # Set up Java 17
-        distribution: 'adopt' # You can choose another distribution if needed
+        java-version: '17' # Set up Java 17, because SonarCloud requires it
+        distribution: 'adopt' 
+
+    - name: Install GitVersion
+      uses: gittools/actions/gitversion/setup@v0.9.7
+      with:
+        versionSpec: '5.x'
+
+    - name: Setup GitVersion
+      uses: gittools/actions/gitversion/execute@v0.9.7
+      id: gitversion
 
     - name: Setup .NET
       uses: actions/setup-dotnet@v1
       with:
         dotnet-version: ${{ env.DOTNET_VERSION }}
+        source-url: ${{ secrets.PACKAGES_FEED_URL }}
+      env:
+        NUGET_AUTH_TOKEN: ${{ secrets.NUGET_AUTH_TOKEN }}
 
     - name: Cache SonarCloud packages
       uses: actions/cache@v2
@@ -55,7 +61,7 @@ jobs:
         path: ~\.sonar\cache
         key: ${{ runner.os }}-sonar
         restore-keys: ${{ runner.os }}-sonar
-        
+            
     - name: Restore dependencies
       run: dotnet restore
 
@@ -72,7 +78,7 @@ jobs:
                                     /d:sonar.cs.opencover.reportsPaths=./CoverageResults/coverage.opencover.xml \
                                     /d:sonar.coverage.exclusions="**Test*.cs" \
                                     /d:sonar.qualitygate.wait=true
-
+   
     - name: Build
       run: dotnet build --no-restore --configuration ${{ env.BUILD_CONFIGURATION }} -p:GeneratePackageOnBuild=false
 
@@ -89,3 +95,35 @@ jobs:
       run: dotnet sonarscanner end /d:sonar.token="${{ secrets.SONAR_TOKEN }}"
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      
+    - name: Publish API
+      run: dotnet publish ${{ env.PUBLISH_PROJECT }} --no-build --configuration ${{ env.BUILD_CONFIGURATION }} --output './../publish'
+   
+    - name: Login to Docker Hub Registry
+      uses: docker/login-action@v3
+      with:
+          username: ${{secrets.DOCKERHUB_USERNAME}}
+          password: ${{secrets.DOCKERHUB_TOKEN}}      
+
+    - name: Build and Push Image to Docker Hub Registry
+      if: steps.gitversion.outputs.CommitsSinceVersionSource > 0
+      uses: docker/build-push-action@v5
+      with:
+        context: .
+        file: docker/Dockerfile.Api
+        push: true
+        tags: ${{secrets.DOCKERHUB_USERNAME}}/${{env.DOCKER_HUB_REPOSITORY}}:${{ steps.gitversion.outputs.nuGetVersionV2 }}
+        labels: |
+            org.opencontainers.image.title=ApiDemo.Api
+            org.opencontainers.image.description=ApiDemo.Api
+            org.opencontainers.image.version=${{ steps.gitversion.outputs.nuGetVersionV2 }}
+
+    - name: Create Release
+      id: create_release
+      uses: actions/create-release@v1
+      if: steps.gitversion.outputs.CommitsSinceVersionSource > 0
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: v${{ steps.gitversion.outputs.nuGetVersionV2}}
+        release_name: Release ${{ steps.gitversion.outputs.nuGetVersionV2}}
