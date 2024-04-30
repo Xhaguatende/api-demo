@@ -46,20 +46,6 @@ jobs:
     - name: Restore dependencies
       run: dotnet restore
 
-    - name: Install SonarCloud
-      run: dotnet tool install --global dotnet-sonarscanner
-
-    - name: Begin SonarCloud Scan
-      run: |
-            dotnet sonarscanner begin /o:"${{ secrets.SONAR_CLOUD_ORGANIZATION }}" \
-                                    /k:"${{ env.SONAR_CLOUD_PROJECT_KEY }}" \
-                                    /v:"${{ steps.gitversion.outputs.nuGetVersionV2 }}" \
-                                    /d:sonar.host.url="${{ secrets.SONAR_CLOUD_URL }}" \
-                                    /d:sonar.login="${{ secrets.SONAR_TOKEN }}" \
-                                    /d:sonar.cs.opencover.reportsPaths=./CoverageResults/coverage.opencover.xml \
-                                    /d:sonar.coverage.exclusions="**Test*.cs" \
-                                    /d:sonar.qualitygate.wait=true
-
     - name: Build
       run: dotnet build --no-restore --configuration ${{ env.BUILD_CONFIGURATION }} -p:GeneratePackageOnBuild=false
 
@@ -72,7 +58,14 @@ jobs:
                     /p:CoverletOutputFormat=\"opencover,json\" \
                     -m:1
 
-    - name: End SonarCloud Scan
-      run: dotnet sonarscanner end /d:sonar.login="${{ secrets.SONAR_TOKEN }}"
+    - name: SonarCloud Analysis
+      uses: SonarSource/sonarcloud-github-action@v2.1.1
+      with:
+        args: >
+            -Dsonar.organization=${{ secrets.SONAR_CLOUD_ORGANIZATION }}
+            -Dsonar.projectKey=${{ env.SONAR_CLOUD_PROJECT_KEY }}
+            -Dsonar.cs.opencover.reportsPaths=./CoverageResults/coverage.opencover.xml
+            -Dsonar.coverage.exclusions="**Test*.cs"
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
