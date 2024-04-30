@@ -31,7 +31,6 @@ jobs:
           - 27017:27017
         options: "--health-cmd \"mongosh --eval 'db.runCommand({ping: 1})'\" --health-interval 10s --health-timeout 5s --health-retries 5"
 
-
     steps:
     - name: Checkout
       uses: actions/checkout@v2
@@ -41,13 +40,21 @@ jobs:
     - name: Set up JDK 17
       uses: actions/setup-java@v2
       with:
-        java-version: '17' # Set up Java 17
-        distribution: 'adopt' # You can choose another distribution if needed
+        java-version: '17' # Set up Java 17, because SonarCloud requires it
+        distribution: 'adopt' 
 
     - name: Setup .NET
       uses: actions/setup-dotnet@v1
       with:
         dotnet-version: ${{ env.DOTNET_VERSION }}
+
+    - name: Cache .NET Core packages
+      uses: actions/cache@v2
+      with:
+        path: ~/.nuget/packages
+        key: ${{ runner.os }}-dotnet-${{ hashFiles('**/*.csproj') }}
+        restore-keys: |
+          ${{ runner.os }}-dotnet-
 
     - name: Cache SonarCloud packages
       uses: actions/cache@v2
