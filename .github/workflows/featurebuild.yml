@@ -65,7 +65,7 @@ jobs:
             -Dsonar.organization=${{ secrets.SONAR_CLOUD_ORGANIZATION }}
             -Dsonar.projectKey=${{ env.SONAR_CLOUD_PROJECT_KEY }}
             -Dsonar.host.url=${{ secrets.SONAR_CLOUD_URL }}
-            -Dsonar.login=${{ secrets.SONAR_TOKEN }}
+            -Dsonar.token=${{ secrets.SONAR_TOKEN }}
             -Dsonar.cs.opencover.reportsPaths=CoverageResults/coverage.opencover.xml
             -Dsonar.coverage.exclusions="**Test*.cs"
       env:
