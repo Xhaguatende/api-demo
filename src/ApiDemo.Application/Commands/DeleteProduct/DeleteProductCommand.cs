@@ -9,4 +9,4 @@ namespace ApiDemo.Application.Commands.DeleteProduct;
 using Domain.Shared;
 using MediatR;
 
-public record DeleteProductCommand(Guid Id) : IRequest<Result<DeleteProductResponse>>;
+public record DeleteProductCommand(Guid Id) : IRequest<Result<DeleteProductCommandResponse>>;

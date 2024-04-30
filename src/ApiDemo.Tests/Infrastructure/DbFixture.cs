@@ -9,6 +9,8 @@ public class DbFixture : IDisposable
     {
         DatabaseName = $"product-catalogue-{Guid.NewGuid()}";
 
+        ConnectionString = "mongodb://localhost:27017/?directConnection=true";
+
         var mongoClient = new MongoClient(ConnectionString);
 
         MongoDatabase = mongoClient.GetDatabase(DatabaseName);
@@ -16,7 +18,8 @@ public class DbFixture : IDisposable
         MongoExtensions.SetupMongoConventions();
     }
 
-    public string ConnectionString => "mongodb://localhost:27017/?directConnection=true";
+    public string ConnectionString { get; }
+
     public string DatabaseName { get; }
 
     public IMongoDatabase MongoDatabase { get; }

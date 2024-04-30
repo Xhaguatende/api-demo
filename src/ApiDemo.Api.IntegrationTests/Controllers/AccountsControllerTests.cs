@@ -110,7 +110,7 @@ public class AccountsControllerTests :
 
         // Assert
         response.EnsureSuccessStatusCode();
-        var content = await response.Content.ReadFromJsonAsync<RegisterAccountResponse>();
+        var content = await response.Content.ReadFromJsonAsync<RegisterAccountCommandResponse>();
 
         Assert.NotNull(content);
         Assert.Equal(command.Email, content.Email);

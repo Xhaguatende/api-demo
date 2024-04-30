@@ -13,7 +13,7 @@ using Domain.Shared;
 using MediatR;
 using Repositories;
 
-public class RegisterAccountCommandHandler : IRequestHandler<RegisterAccountCommand, Result<RegisterAccountResponse>>
+public class RegisterAccountCommandHandler : IRequestHandler<RegisterAccountCommand, Result<RegisterAccountCommandResponse>>
 {
     private readonly IAccountRepository _accountRepository;
 
@@ -22,13 +22,13 @@ public class RegisterAccountCommandHandler : IRequestHandler<RegisterAccountComm
         _accountRepository = accountRepository;
     }
 
-    public async Task<Result<RegisterAccountResponse>> Handle(RegisterAccountCommand request, CancellationToken cancellationToken)
+    public async Task<Result<RegisterAccountCommandResponse>> Handle(RegisterAccountCommand request, CancellationToken cancellationToken)
     {
         var existingAccount = await _accountRepository.GetByIdAsync(new AccountId(request.Email), cancellationToken);
 
         if (existingAccount is not null)
         {
-            return Result<RegisterAccountResponse>.Failure([AccountErrors.AccountAlreadyExists(request.Email)]);
+            return Result<RegisterAccountCommandResponse>.Failure([AccountErrors.AccountAlreadyExists(request.Email)]);
         }
 
         var account = new Account(
@@ -37,6 +37,6 @@ public class RegisterAccountCommandHandler : IRequestHandler<RegisterAccountComm
 
         await _accountRepository.RegisterAccountAsync(account, cancellationToken);
 
-        return new RegisterAccountResponse(request.Email);
+        return new RegisterAccountCommandResponse(request.Email);
     }
 }
