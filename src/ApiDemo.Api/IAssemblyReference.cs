@@ -6,4 +6,7 @@
 
 namespace ApiDemo.Api;
 
+/// <summary>
+/// Represents an assembly reference.
+/// </summary>
 public interface IAssemblyReference;
