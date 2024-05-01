@@ -27,10 +27,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\ApiDemo.Api\ApiDemo.Api.csproj" />
-    <ProjectReference Include="..\ApiDemo.Application\ApiDemo.Application.csproj" />
-    <ProjectReference Include="..\ApiDemo.Domain\ApiDemo.Domain.csproj" />
-    <ProjectReference Include="..\ApiDemo.Infrastructure\ApiDemo.Infrastructure.csproj" />
     <ProjectReference Include="..\ApiDemo.Tests\ApiDemo.Tests.csproj" />
   </ItemGroup>
 

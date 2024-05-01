@@ -27,7 +27,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\ApiDemo.Infrastructure\ApiDemo.Infrastructure.csproj" />
     <ProjectReference Include="..\ApiDemo.Tests\ApiDemo.Tests.csproj" />
   </ItemGroup>
 

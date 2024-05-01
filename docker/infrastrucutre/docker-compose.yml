@@ -1,0 +1,32 @@
+version: '3.8'
+services:
+  mongodb:
+    image: mongo:7
+    command: mongod --replSet myreplset --bind_ip_all
+    ports:
+      - "27017:27017"
+    volumes:
+      - ./data:/data/db  
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 10s
+      retries: 5
+
+  mongo-setup:
+    image: mongodb/mongodb-enterprise-server:latest
+    depends_on:
+      mongodb:
+        condition: service_healthy
+    command: >
+      bash -c "
+      mongosh --host mongodb:27017 --eval 'rs.initiate({
+        _id: \"myreplset\",
+        members: [{ _id: 0, host: \"mongodb:27017\" }]
+      })' &&
+      mongosh --host mongodb:27017 --eval 'while (true) { if (db.isMaster().ismaster) { break; } else { sleep(1000); } }' &&
+      echo 'Replica set initiated and ready.'"
+
+volumes:
+  data:
+
