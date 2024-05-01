@@ -6,7 +6,7 @@
 
 namespace ApiDemo.Domain.Primitives;
 
-public abstract class ValueObject
+public abstract class ValueObject : IEquatable<ValueObject>
 {
     public static bool operator !=(ValueObject? left, ValueObject? right)
     {
@@ -16,6 +16,16 @@ public abstract class ValueObject
     public static bool operator ==(ValueObject? left, ValueObject? right)
     {
         return EqualOperator(left, right);
+    }
+
+    public bool Equals(ValueObject? other)
+    {
+        if (other is null)
+        {
+            return false;
+        }
+
+        return ReferenceEquals(this, other) || GetEqualityComponents().SequenceEqual(other.GetEqualityComponents());
     }
 
     public override bool Equals(object? obj)
