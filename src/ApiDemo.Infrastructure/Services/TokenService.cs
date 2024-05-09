@@ -42,6 +42,7 @@ public class TokenService : ITokenService
             Claims = new Dictionary<string, object>
             {
                 { "sub", "user_id" },
+                { ClaimTypes.Name, account.Id.Email },
                 { ClaimTypes.NameIdentifier, account.Id.Email },
                 { ClaimTypes.Email, account.Id.Email }
             }
