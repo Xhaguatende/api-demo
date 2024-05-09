@@ -77,4 +77,11 @@ public class AccountsController : ApiDemoControllerBase
 
         return Ok(response.Value);
     }
+
+    [HttpGet("sign-out")]
+    public async Task<IActionResult> SignOutAsync()
+    {
+        // TODO: Implementation
+        return Ok();
+    }
 }

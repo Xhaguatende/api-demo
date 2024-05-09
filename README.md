@@ -1,3 +1,9 @@
+[![Quality gate](https://sonarcloud.io/api/project_badges/quality_gate?project=Xhaguatende_api-demo)](https://sonarcloud.io/summary/new_code?id=Xhaguatende_api-demo)
+[![Coverage](https://sonarcloud.io/api/project_badges/measure?project=Xhaguatende_api-demo&metric=coverage)](https://sonarcloud.io/summary/new_code?id=Xhaguatende_api-demo)
+[![Duplicated Lines (%)](https://sonarcloud.io/api/project_badges/measure?project=Xhaguatende_api-demo&metric=duplicated_lines_density)](https://sonarcloud.io/summary/new_code?id=Xhaguatende_api-demo)
+[![Security Rating](https://sonarcloud.io/api/project_badges/measure?project=Xhaguatende_api-demo&metric=security_rating)](https://sonarcloud.io/summary/new_code?id=Xhaguatende_api-demo)
+[![Vulnerabilities](https://sonarcloud.io/api/project_badges/measure?project=Xhaguatende_api-demo&metric=vulnerabilities)](https://sonarcloud.io/summary/new_code?id=Xhaguatende_api-demo)
+
 # API Demo
 This is a simple API demo using .NET and MongoDB.
 
